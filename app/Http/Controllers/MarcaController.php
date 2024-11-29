@@ -36,6 +36,13 @@ class MarcaController extends Controller
         $datosValidos = $request->validated();
         $marca = Marca::find($id);
         $marca->update($datosValidos);
+
+        
+
+        return response()->json([
+            'message' => 'Marca actualizada exitosamente',
+            'marca' => $marca
+          ], 200);
     }
 
     /**

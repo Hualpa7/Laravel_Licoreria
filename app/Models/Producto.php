@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 
@@ -20,18 +21,55 @@ class Producto extends Model
         'id_descuento'
     ];
 
-    protected function producto(): Attribute{
+    protected function producto(): Attribute
+    {
         return Attribute::make(
-               get: fn (string $value) => ucfirst(strtolower($value)),
-               set: fn (string $value) => strtolower($value),
+            get: fn (string $value) => ucwords(strtolower($value)),
+            set: fn(string $value) => strtolower($value),
         );
     }
 
     protected function costo(): Attribute
     {
         return Attribute::make(
-            get: fn($value) => '$' . number_format($value, 2), // Agregar signo de pesos y formatear a dos decimales
-            set: fn($value) => is_string($value) ? number_format((float)$value, 2, ',', '') : $value // Convertir a dos decimales
+            // Convertir a string en el formato deseado con coma como separador de decimales
+            get: fn($value) => (string)number_format($value, 2, ',', ''),
+            // En el set, convertir a float y eliminar puntos en la parte entera
+            set: fn($value) => is_string($value)
+                ? (float)str_replace(',', '.', $value)
+                : $value
         );
+    }
+
+     //actualiza fecha de modificacion
+    protected static function booted()
+    {
+        static::updating(function ($producto) {
+            $producto->fecha_modificacion = now();
+        });
+    }
+    //LO SIGUIENTE ES PARA RELACIONAR MI MODELO DE PRODUCTO CON LOS DE MARCA, CATEOGIRA Y STOCK, PARA SER MAS ESCALABLE
+    ///Y NO HACER CONSULTAS COMPLEJAS EN EL COONTROLADOR DEL PRODCUTO
+    // Relación con la categoría
+    public function categoria()
+    {
+        return $this->belongsTo(Categoria::class, 'id_categoria');
+    }
+
+    public function descuento()
+    {
+        return $this->belongsTo(Descuento::class, 'id_descuento');
+    }
+
+    // Relación con la marca
+    public function marca()
+    {
+        return $this->belongsTo(Marca::class, 'id_marca');
+    }
+
+    // Relación con el stock
+    public function stock()
+    {
+        return $this->hasMany(Stock::class, 'id_producto');
     }
 }

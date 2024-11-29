@@ -22,22 +22,29 @@ class StoreVentaRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'neto' => 'required|regex:/^\d+(\.\d{1,2})?$/',
+            'total' => 'required|regex:/^\d+(\.\d{1,2})?$/',
             'metodo_pago' => 'required|string|max:50',
-            'descuento_total' => 'required|regex:/^\d+(\.\d{1,2})?$/',
+            'descuento_gral' => 'integer',
             'id_usuario' => 'required|integer|exists:usuario,id_usuario',
-            'id_sucursal' => 'required|integer|exists:sucursal,id_sucursal'
+            'id_sucursal' => 'required|integer|exists:sucursal,id_sucursal',
+            'productos' => 'required|array',
+            'productos.*.id_producto' => 'required|integer|exists:producto,id_producto',
+            'productos.*.Cantidad' => 'required|integer|min:1',
+            'productos.*.IVA' => 'required|integer'
         ];
     }
 
     public function messages(): array
     {
         return [
-            'neto.regex' => 'El valor debe ser un numero decimal con 2 decimales',
+            'total.regex' => 'El valor debe ser un numero decimal con 2 decimales',
             'metodo_pago.required' => 'Ingrese metodo de pago',
-            'descuento_total.regex' => 'El valor debe ser un numero decimal con 2 decimales',
             'id_usuario.exists' => 'El usuario que realizo la venta no existe',
-            'id_sucursal.exists' => 'La sucursal no existe'
+            'id_sucursal.exists' => 'La sucursal no existe',
+            'productos.required' => 'Debe agregar al menos un producto',
+            'productos.*.id_producto.exists' => 'El producto no existe',
+            'productos.*.Cantidad.min' => 'La cantidad debe ser al menos 1',
+            'productos.*.IVA.required' => 'Introduzca IVA'
         ];
     }
 }

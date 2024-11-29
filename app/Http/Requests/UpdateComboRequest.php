@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreComboRequest extends FormRequest
+class UpdateComboRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,8 +22,8 @@ class StoreComboRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'codigo' => 'required|string|max:50|unique:combo,codigo',
-            'nombre' => 'required|string|max:50|unique:combo,nombre',
+            'codigo' => 'required',
+            'nombre' => 'required',
             'costo' => 'required|regex:/^\d+(\,\d{1,2})?$/',
             'duracion' => 'required|date|after:today',
             'id_sucursal' => 'required|integer|exists:sucursal,id_sucursal',
@@ -36,7 +36,6 @@ class StoreComboRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'nombre.unique' => 'El combo con ese nombre ya existe. Intente con otro',
             'costo.regex' => 'El costo debe ser un número con hasta 2 decimales.',
             'duracion.required' => 'Ingrese una fecha',
             'duracion.after' => 'La fecha de duración debe ser posterior al día actual.',

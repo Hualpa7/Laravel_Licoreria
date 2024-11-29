@@ -19,7 +19,7 @@ class Proveedor extends Model
 
     protected function nombre(): Attribute{
         return Attribute::make(
-               get: fn (string $value) => ucfirst(strtolower($value)),
+               get: fn (string $value) => ucwords(strtolower($value)),
                set: fn (string $value) => strtolower($value),
         );
     }

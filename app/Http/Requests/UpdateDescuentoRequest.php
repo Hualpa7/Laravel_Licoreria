@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreCategoriaRequest extends FormRequest
+class UpdateDescuentoRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,15 +22,16 @@ class StoreCategoriaRequest extends FormRequest
     public function rules(): array
     {
         return [
-             'nombre_categoria' => 'required|unique:categoria,nombre_categoria|max:100'
+            'duracion' => 'required|date|after:today',
+            'porcentaje' => 'required|integer',
         ];
     }
-
 
     public function messages(): array
     {
         return [
-            'nombre_categoria.unique' => 'La categoria ya existe, ingrese una diferente.'
+            'duracion.after' => 'La fecha de duración debe ser posterior al día actual.',
+            'porcentaje.required' => 'Ingrese porcentaje.'
         ];
     }
 }

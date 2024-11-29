@@ -38,6 +38,11 @@ class CategoriaController extends Controller
         $datosValidos = $request->validated();
         $categoria = Categoria::find($id);
         $categoria->update($datosValidos);
+
+        return response()->json([
+            'message' => 'Categoria actualizada exitosamente',
+            'categoria' => $categoria
+          ], 200);
     }
 
 

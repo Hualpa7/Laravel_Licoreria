@@ -22,9 +22,11 @@ class StoreCompraRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'total' => 'required|regex:/^\d+(\.\d{1,2})?$/',
+            'total' => 'required|regex:/^\d+(\,\d{1,2})?$/',
             'id_proveedor' => 'required|integer|exists:proveedor,id_proveedor',
-            'id_sucursal' => 'required|integer|exists:sucursal,id_sucursal'
+            'id_sucursal' => 'required|integer|exists:sucursal,id_sucursal',
+            'id_producto' => 'required|integer|exists:producto,id_producto',
+            'cantidad' => 'required'
         ];
     }
 

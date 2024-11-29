@@ -45,4 +45,21 @@ class ProveedorController extends Controller
     {
         //
     }
+
+    public function buscar (Request $request){
+        $termino = $request->termino;
+        $tipoBusqueda = $request->tipoBusquedaProveedor;
+    
+    
+        if($tipoBusqueda!=null && $tipoBusqueda=== 'Nombre'){
+          $resultados = Proveedor::whereRaw('nombre LIKE ?', ['%' . strtolower($termino) . '%'])
+          ->get();
+        }
+        if($tipoBusqueda!=null && $tipoBusqueda=== 'Correo'){
+          $resultados = Proveedor::whereRaw('correo LIKE ?', ['%' .$termino. '%'])
+          ->get();
+        }
+    
+        return response()->json($resultados);
+      }
 }

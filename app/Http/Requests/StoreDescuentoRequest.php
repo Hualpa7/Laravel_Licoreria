@@ -23,7 +23,7 @@ class StoreDescuentoRequest extends FormRequest
     {
         return [
             'duracion' => 'required|date|after:today',
-            'porcentaje' => 'required|regex:/^\d+(\.\d{1,2})?$/',
+            'porcentaje' => 'required|integer',
             'id_sucursal' => 'required|integer|exists:sucursal,id_sucursal'
         ];
     }
@@ -32,8 +32,8 @@ class StoreDescuentoRequest extends FormRequest
     {
         return [
             'duracion.after' => 'La fecha de duración debe ser posterior al día actual.',
-            'porcentaje.regex' => 'El porcentaje debe ser un numero hasta con 2 decimales.',
-            'id_sucursal.exists' => 'La sucursal no existe.'
+            'id_sucursal.exists' => 'La sucursal no existe.',
+             'porcentaje.required' => 'Ingrese porcentaje.'
         ];
     }
 }

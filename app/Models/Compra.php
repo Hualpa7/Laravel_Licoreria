@@ -19,8 +19,22 @@ class Compra extends Model
     protected function total(): Attribute
     {
         return Attribute::make(
-            get: fn($value) => '$' . number_format($value, 2), // Agregar signo de pesos y formatear a dos decimales
-            set: fn($value) => is_string($value) ? number_format((float)$value, 2, '.', '') : $value // Convertir a dos decimales
+            // Convertir a string en el formato deseado con coma como separador de decimales
+            get: fn($value) => (string)number_format($value, 2, ',', ''),
+            // En el set, convertir a float y eliminar puntos en la parte entera
+            set: fn($value) => is_string($value)
+                ? (float)str_replace(',', '.', $value)
+                : $value
         );
+    }
+
+    public function proveedor()
+    {
+        return $this->belongsTo(Proveedor::class, 'id_proveedor');
+    }
+
+    public function producto()
+    {
+        return $this->belongsTo(Producto::class, 'id_producto');
     }
 }

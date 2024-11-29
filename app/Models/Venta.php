@@ -11,18 +11,22 @@ class Venta extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'neto',
+        'total',
         'metodo_pago',
-        'descuento_total',
+        'descuento_gral',
         'id_usuario',
         'id_sucursal'
     ];
 
-    protected function neto(): Attribute
+    protected function total(): Attribute
     {
         return Attribute::make(
-            get: fn($value) => '$' . number_format($value, 2), // Agregar signo de pesos y formatear a dos decimales
-            set: fn($value) => is_string($value) ? number_format((float)$value, 2, '.', '') : $value // Convertir a dos decimales
+            // Convertir a string en el formato deseado con coma como separador de decimales
+            get: fn($value) => (string)number_format($value, 2, ',', ''),
+            // En el set, convertir a float y eliminar puntos en la parte entera
+            set: fn($value) => is_string($value)
+                ? (float)str_replace(',', '.', $value)
+                : $value
         );
     }
 
@@ -33,12 +37,20 @@ class Venta extends Model
         );
     }
 
-    protected function descuentoTotal(): Attribute
-    {
-        return Attribute::make(
-            get: fn($value) => '$' . number_format($value, 2), // Agregar signo de pesos y formatear a dos decimales
-            set: fn($value) => is_string($value) ? number_format((float)$value, 2, '.', '') : $value // Convertir a dos decimales
-        );
-    }
+   
+
+    //relacion con tabla usuarios
+     // Relación con la marca
+     public function usuario()
+     {
+         return $this->belongsTo(Usuario::class, 'id_usuario');
+     }
+
+     public function producto()
+     {
+         return $this->belongsToMany(Producto::class, 'venta_producto', 'id_venta', 'id_producto')
+                     ->withPivot('cantidad', 'iva'); // Para acceder a los campos adicionales en la tabla pivot
+     }
+     
 
 }

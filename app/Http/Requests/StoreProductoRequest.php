@@ -26,7 +26,7 @@ class StoreProductoRequest extends FormRequest
             'codigo' => 'required|string|max:50|unique:producto,codigo', // El código debe ser único en la tabla producto en el campo codigo
             'producto' => 'required|string|max:100|unique:producto,producto',
             'alerta_minima' => 'required|integer', // Debe ser un entero
-            'costo' => 'required|regex:/^\d+(\.\d{1,2})?$/', // Validación para que sea decimal con 2 decimales. Hasta aqui sigue siendo un string
+            'costo' => 'required|regex:/^\d+(\,\d{1,2})?$/', // Validación para que sea decimal con 2 decimales. Hasta aqui sigue siendo un string
             'id_categoria' => [
                 'required',
                 'integer',

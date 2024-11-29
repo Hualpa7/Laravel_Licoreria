@@ -3,8 +3,9 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class StoreCategoriaRequest extends FormRequest
+class UpdateProductoRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -21,16 +22,14 @@ class StoreCategoriaRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-             'nombre_categoria' => 'required|unique:categoria,nombre_categoria|max:100'
-        ];
-    }
+        $productoId = $this->route('id');
 
-
-    public function messages(): array
-    {
         return [
-            'nombre_categoria.unique' => 'La categoria ya existe, ingrese una diferente.'
+            'alerta_minima' => 'required|integer', // Debe ser un entero
+            'costo' => 'required|regex:/^\d+(\,\d{1,2})?$/',
+            'id_marca' => 'required|integer|exists:marca,id_marca',
+            'id_categoria' => 'required|integer|exists:categoria,id_categoria',
+
         ];
     }
 }
