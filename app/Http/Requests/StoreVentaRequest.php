@@ -28,9 +28,9 @@ class StoreVentaRequest extends FormRequest
             'id_usuario' => 'required|integer|exists:usuario,id_usuario',
             'id_sucursal' => 'required|integer|exists:sucursal,id_sucursal',
             'productos' => 'required|array',
-            'productos.*.id_producto' => 'required|integer|exists:producto,id_producto',
-            'productos.*.Cantidad' => 'required|integer|min:1',
-            'productos.*.IVA' => 'required|integer'
+            'productos.*.id_producto' => 'integer|exists:producto,id_producto',
+            'productos.*.Cantidad' => 'integer|min:1',
+            'productos.*.IVA' => 'integer'
         ];
     }
 

@@ -28,6 +28,7 @@ Route::resource('/categoria',CategoriaController::class);
 Route::post('/categoria/filtro', [CategoriaController::class,'filtro']);
 Route::resource('/combo',ComboController::class);
 Route::post('/combo/filtro', [ComboController::class,'filtro']);
+Route::post('/combo/buscar', [ComboController::class,'buscar']);
 Route::resource('/compra',CompraController::class);
 Route::post('/compra/filtro', [CompraController::class,'filtro']);
 Route::get('/compra/anos', [CompraController::class,'obtenAños']);

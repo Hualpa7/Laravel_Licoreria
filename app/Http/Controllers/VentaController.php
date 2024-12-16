@@ -24,27 +24,66 @@ class VentaController extends Controller
     public function store(StoreVentaRequest $request)
     {
 
-
-
         $datosValidos = $request->validated();
 
         DB::transaction(function () use ($datosValidos, $request) { //envuelvo todo en una transaccion para que se carguen loso registros
             $venta = Venta::create($datosValidos);                 //de manera simultanea y si ocurre un error no se cargue el de venta antes 
-            foreach ($request->productos as $producto) {           //que el de venta_productos
-                DB::table('venta_producto')->insert([
-                    'id_venta' => $venta->id_venta,
-                    'id_producto' => $producto['id_producto'],
-                    'cantidad' => $producto['Cantidad'],
-                    'iva' => $producto['IVA']
-                ]);
+            foreach ($request->productos as $item) {           //que el de venta_productos
+                if ($item['esCombo']) {
+                    $combo = DB::table('combo')
+                        ->where('combo.id_combo', $item['id_combo'])
+                        ->leftJoin('combo_producto', 'combo.id_combo', '=', 'combo_producto.id_combo')
+                        ->leftJoin('producto', 'combo_producto.id_producto', '=', 'producto.id_producto')
+                        ->select(
+                            
+                            DB::raw('json_agg(json_build_object(
+                    \'producto\',producto.producto,
+                    \'id_producto\',producto.id_producto,
+                    \'cantidad\',combo_producto.cantidad
+                    )) as productos')
+                        )
+                        ->groupBy('combo.id_combo')
+                        ->first();
+                    $combo->productos = json_decode($combo->productos);
+                    foreach ($combo->productos as $producto) {
+                        DB::table('venta_producto')->insert([
+                            'id_venta' => $venta->id_venta,
+                            'id_producto' => $producto ->id_producto,
+                            'cantidad' => $producto->cantidad * $item['Cantidad'],
+                            'iva' => 0
+                        ]);
 
-                DB::table('stock')->insert([
-                    'cantidad'=> -$producto['Cantidad'],
-                    'tipo' => "Venta",
-                    'id_producto' => $producto['id_producto'],
-                    'id_venta' => $venta->id_venta,
-                    'id_sucursal' => $venta->id_sucursal
-                ]);
+                        DB::table('stock')->insert([
+                            'cantidad' => -$producto->cantidad * $item['Cantidad'],
+                            'tipo' => "Venta",
+                            'id_producto' => $producto->id_producto,
+                            'id_venta' => $venta->id_venta,
+                            'id_sucursal' => $venta->id_sucursal
+                        ]);
+                    }
+                } else {
+                    $stock = DB::table('stock')
+                    ->where('id_producto',$item['id_producto'])
+                    ->sum('Cantidad');
+
+                    if($item['Cantidad']<=$stock){
+                        DB::table('venta_producto')->insert([
+                            'id_venta' => $venta->id_venta,
+                            'id_producto' => $item['id_producto'],
+                            'cantidad' => $item['Cantidad'],
+                            'iva' => $item['IVA']
+                        ]);
+    
+                        DB::table('stock')->insert([
+                            'cantidad' => -$item['Cantidad'],
+                            'tipo' => "Venta",
+                            'id_producto' => $item['id_producto'],
+                            'id_venta' => $venta->id_venta,
+                            'id_sucursal' => $venta->id_sucursal
+                        ]);
+                    }
+                    else return response()->json(['message' => 'Error. No hay stock suficiente.'], 201);
+                }
             }
             $venta->save();
             return response()->json(['message' => 'Venta realizada exitosamente'], 201);

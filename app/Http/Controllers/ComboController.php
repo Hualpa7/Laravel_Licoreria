@@ -18,6 +18,7 @@ class ComboController extends Controller
             ->leftJoin('combo_producto', 'combo.id_combo', '=', 'combo_producto.id_combo')
             ->leftJoin('producto', 'combo_producto.id_producto', '=', 'producto.id_producto')
             ->select(
+                'combo.id_combo',
                 'combo.codigo',
                 'combo.nombre',
                 'combo.costo',
@@ -72,6 +73,7 @@ class ComboController extends Controller
             ->leftJoin('combo_producto', 'combo.id_combo', '=', 'combo_producto.id_combo')
             ->leftJoin('producto', 'combo_producto.id_producto', '=', 'producto.id_producto')
             ->select(
+                'combo.es_combo',
                 'combo.codigo',
                 'combo.id_combo',
                 'combo.nombre',
@@ -165,4 +167,22 @@ class ComboController extends Controller
 
         return response()->json($result);
     }
+
+    public function buscar (Request $request){
+        $termino = $request->termino;
+        $tipoBusqueda = $request->tipoBusquedaCombo;
+    
+    
+        if($tipoBusqueda!=null && $tipoBusqueda=== 'Nombre'){
+          $resultados = Combo::whereRaw('LOWER(nombre) LIKE ?', ['%' . strtolower($termino) . '%'])
+          ->get();
+        }
+        if($tipoBusqueda!=null && $tipoBusqueda=== 'Codigo'){
+          $resultados = Combo::whereRaw('LOWER(codigo) LIKE ?', ['%' .strtolower($termino). '%'])
+          ->get();
+        }
+    
+    
+        return response()->json($resultados);
+      }
 }
